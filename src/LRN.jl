@@ -1,4 +1,16 @@
 include("addext.jl")
+"""
+    LRNCType
+
+`LRNCType` represents the column types for LRNData:
+ignore = 0, data = 1, class = 3, key = 9
+"""
+@enum LRNCType begin
+    ignore = 0
+    data   = 1
+    class  = 3
+    key    = 9
+end
 
 """
     LRNData
@@ -18,7 +30,7 @@ include("addext.jl")
 
 - `column_types::AbstractArray{Integer, 1}`
 
-  Column types: 0 = ignore, 1 = data, 3 = class, 9 = key
+  Column types: 
 
 - `comment::AbstractString`
 
@@ -28,7 +40,7 @@ mutable struct LRNData{T<:Real}
     data::AbstractMatrix{T}
     header::AbstractArray{AbstractString, 1}
     keys::AbstractArray{Integer, 1}
-    column_types::AbstractArray{Integer, 1}
+    column_types::AbstractArray{LRNCType, 1}
     comment::AbstractString
 
     # Enforcing invariants
@@ -42,9 +54,6 @@ mutable struct LRNData{T<:Real}
         end
         if length(column_types) != (ncol+1)
             throw(ArgumentError("Number of type specifiers doesn't match number of columns"))
-        end
-        if any(t -> !(t in [0,1,3,9]), column_types)
-            throw(ArgumentError("Column types can only be 0, 1, 3 or 9"))
         end
         if !allunique(keys)
             throw(ArgumentError("Keys must be unique"))
@@ -74,7 +83,7 @@ function writeLRN(filename::String, lrn::LRNData, directory=pwd())
         # write number of variables (+1 for key)
         write(f, "% $(ncol+1)\n")
         # write column types
-        write(f, "% $(join(lrn.column_types, '\t'))\n")
+        write(f, "% $(join(map(Int,lrn.column_types), '\t'))\n")
         # write header
         write(f, "% $(join(lrn.header, '\t'))\n")
         # write data
