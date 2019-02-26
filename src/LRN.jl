@@ -88,7 +88,8 @@ function writeLRN(filename::String, lrn::LRNData, directory=pwd())
         write(f, "% $(join(lrn.header, '\t'))\n")
         # write data
         for (index, row) in enumerate(eachrow(lrn.data))
-            write(f, "$(lrn.keys[index])\t$(join(row,'\t'))\n")
+            new_row = replace(row, Inf => NaN)
+            write(f, "$(lrn.keys[index])\t$(join(new_row,'\t'))\n")
         end
     end
 end
