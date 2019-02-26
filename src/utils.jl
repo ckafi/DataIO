@@ -10,8 +10,13 @@ julia> addext("hello", "data")
 
 julia> addext("hello.data", "data")
 "hello.data"
+
+julia> addext("hello.", ".data")
+"hello.data"
 ```
 """
 function addext(filename::String, extension::String)::String
+    filename = rstrip(filename, '.')
+    extension = lstrip(extension, '.')
     endswith(filename, extension) ? filename : filename*"."*extension
 end
