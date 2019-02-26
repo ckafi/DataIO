@@ -20,3 +20,11 @@ function addext(filename::String, extension::String)::String
     extension = lstrip(extension, '.')
     endswith(filename, extension) ? filename : filename*"."*extension
 end
+
+
+function prepare_path(filename::String, extension::String, directory=pwd())::String
+    # make sure the filename has the right extension
+    filename = addext(filename, extension)
+    # normalize path
+    normpath(joinpath(directory, filename))
+end
