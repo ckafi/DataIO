@@ -1,3 +1,4 @@
+using DelimitedFiles
 include("utils.jl")
 
 """
@@ -10,6 +11,7 @@ ignore = 0, data = 1, class = 3
     ignore = 0
     data   = 1
     class  = 3
+    key    = 9
 end
 
 """
@@ -28,27 +30,27 @@ end
 
   Unique key for each line
 
-- `header::AbstractArray{AbstractString, 1}`
+- `names::AbstractArray{AbstractString, 1}`
 
   Column names
 
-- `key_header::AbstractString`
+- `key_name::AbstractString`
 
-  Header for key column
+  Name for key column
 
 - `comment::AbstractString`
 
   Comments about the data
 """
-mutable struct LRNData
+struct LRNData
     data::AbstractMatrix{Float64}
     column_types::AbstractArray{LRNCType, 1}
     keys::AbstractArray{Integer, 1}
-    header::AbstractArray{AbstractString, 1}
-    key_header::AbstractString
+    names::AbstractArray{AbstractString, 1}
+    key_name::AbstractString
     comment::AbstractString
 
-    function LRNData(data, column_types=[], keys=[], header=[], key_header="Key", comment="")
+    function LRNData(data; column_types=[], keys=[], names=[], key_name="Key", comment="")
         (nrow, ncol) = size(data)
         if isempty(column_types)
             column_types = map(LRNCType, fill(1, ncol))
@@ -56,23 +58,26 @@ mutable struct LRNData
         if isempty(keys)
             keys = 1:nrow
         end
-        if isempty(header)
-            header = map(*, fill("C",ncol), map(string,1:ncol))
+        if isempty(names)
+            names = map(*, fill("C",ncol), map(string,1:ncol))
         end
         # Enforcing invariants
-        if length(header) != ncol
-            throw(ArgumentError("Header size doesn't match number of columns"))
+        if length(names) != ncol
+            throw(ArgumentError("Name count doesn't match number of columns"))
         end
         if length(keys) != nrow
             throw(ArgumentError("Number of keys doesn't match number of rows"))
         end
-        if length(column_types) != ncol
-            throw(ArgumentError("Number of type specifiers doesn't match number of columns"))
-        end
         if !allunique(keys)
             throw(ArgumentError("Keys must be unique"))
         end
-        new(data, column_types, keys, header, key_header, comment)
+        if length(column_types) != ncol
+            throw(ArgumentError("Number of type specifiers doesn't match number of columns"))
+        end
+        if key in column_types
+            throw(ArgumentError("Key vector must be provided seperatly."))
+        end
+        new(data, column_types, keys, names, key_name, comment)
     end
 end
 
@@ -94,13 +99,61 @@ function writeLRN(lrn::LRNData, filename::String, directory=pwd())
         # write number of variables (+1 for key)
         write(f, "% $(ncol+1)\n")
         # write column types (9 for key)
-        write(f, "% 9\t$(join(map(Int,lrn.column_types), '\t'))\n")
-        # write header
-        write(f, "% $(lrn.key_header)\t$(join(lrn.header, '\t'))\n")
+        write(f, "% $(Int(key))\t$(join(map(Int,lrn.column_types), '\t'))\n")
+        # write names
+        write(f, "% $(lrn.key_name)\t$(join(lrn.names, '\t'))\n")
         # write data
         for (index, row) in enumerate(eachrow(lrn.data))
             new_row = replace(row, Inf => NaN)
             write(f, "$(lrn.keys[index])\t$(join(new_row,'\t'))\n")
         end
     end
+end
+
+
+function readLRN(filename::String, directory=pwd())
+    data = []
+    column_types = []
+    keys = []
+    names = []
+    key_name = ""
+    comment = ""
+    key_index = 0
+
+    # There is currently no way to have a native file chooser dialogue
+    # without building a whole Gtk/Tk GUI
+    filename = prepare_path(filename, "", directory)
+    open(filename, "r") do f
+        line = readline(f)
+        # Comments
+        while startswith(line, '#')
+            comment *= strip(line, [' ', '\t', '#'])
+            line = readline(f)
+        end
+        strip_header = l -> strip(l, [' ', '\t', '%'])
+        # Number of datasets
+        nrow = parse(Int, strip_header(line))
+        line = readline(f)
+        # Number of columns
+        ncol = parse(Int, strip_header(line))
+        line = readline(f)
+        # Column types
+        column_types = split(strip_header(line), '\t')
+        println(column_types)
+        column_types = map(x -> LRNCType(parse(Int,x)), column_types)
+        key_index = findfirst(x -> x==key, column_types)
+        deleteat!(column_types, key_index)
+        line = readline(f)
+        # Names
+        names = split(strip_header(line), '\t')
+        key_name = names[key_index]
+        deleteat!(names, key_index)
+        # Data
+        data = readdlm(f, '\t', Float64, skipblanks = true)
+        keys = map(Int, data[:,key_index])
+        data = data[:,deleteat!(collect(1:ncol), key_index)] # remove key column
+    end
+
+    LRNData(data; column_types = column_types, keys = keys,
+            names = names, key_name = key_name, comment = comment)
 end
