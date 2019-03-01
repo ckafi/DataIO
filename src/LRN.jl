@@ -58,17 +58,8 @@ struct LRNData
     key_name::String
     comment::String
 
-    function LRNData(data; column_types=[], keys=[], names=[], key_name="Key", comment="")
+    function LRNData(data::Matrix{Float64}, column_types, keys, names, key_name, comment)
         (nrow, ncol) = size(data)
-        if isempty(column_types)
-            column_types = map(LRNCType, fill(1, ncol))
-        end
-        if isempty(keys)
-            keys = 1:nrow
-        end
-        if isempty(names)
-            names = map(*, fill("C",ncol), map(string,1:ncol))
-        end
         # Enforcing invariants
         if length(names) != ncol
             throw(ArgumentError("Name count doesn't match number of columns"))
@@ -88,6 +79,33 @@ struct LRNData
         new(data, column_types, keys, names, key_name, comment)
     end
 end
+
+
+"""
+    LRNData(data;
+            column_types=[9,1,1...],
+            keys=[1,2,3...],
+            names=["C1","C2","C3"...],
+            key_name="Key",
+            comment=""
+    )
+
+Convenience constructor for `LRNData`. Uses sensible defaults.
+"""
+function LRNData(data::Matrix{Float64}; column_types = [], keys = [], names = [], key_name = "Key", comment = "")
+    (nrow, ncol) = size(data)
+    if isempty(column_types)
+        column_types = map(LRNCType, fill(1, ncol))
+    end
+    if isempty(keys)
+        keys = Array(1:nrow)
+    end
+    if isempty(names)
+        names = map(*, fill("C",ncol), map(string,1:ncol))
+    end
+    LRNData(data, column_types, keys, names, key_name, comment)
+end
+
 
 """
     writeLRN(filename::String, lrn::LRNData, directory=pwd())
