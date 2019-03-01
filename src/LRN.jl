@@ -10,7 +10,8 @@ export LRNCType, LRNData, writeLRN, readLRN
 """
     LRNCType
 
-`LRNCType` represents the column types for LRNData:
+Enum representing the column types for LRNData:
+
 ignore = 0, data = 1, class = 3
 """
 @enum LRNCType begin
@@ -20,41 +21,42 @@ ignore = 0, data = 1, class = 3
     key    = 9
 end
 
+
 """
     LRNData
 
 `LRNData` represents the contents of a `*.lrn` file with the following fields:
-- `data::AbstractMatrix{Float64}`
+- `data::Matrix{Float64}`
 
   Matrix of data, cases in rows, variables in columns
 
-- `column_types::AbstractArray{LRNCType, 1}`
+- `column_types::Array{LRNCType, 1}`
 
   Column types, see `LRNCType`
 
-- `keys::AbstractArray{Integer, 1}`
+- `keys::Array{Integer, 1}`
 
   Unique key for each line
 
-- `names::AbstractArray{AbstractString, 1}`
+- `names::Array{String, 1}`
 
   Column names
 
-- `key_name::AbstractString`
+- `key_name::String`
 
   Name for key column
 
-- `comment::AbstractString`
+- `comment::String`
 
   Comments about the data
 """
 struct LRNData
-    data::AbstractMatrix{Float64}
-    column_types::AbstractArray{LRNCType, 1}
-    keys::AbstractArray{Integer, 1}
-    names::AbstractArray{AbstractString, 1}
-    key_name::AbstractString
-    comment::AbstractString
+    data::Matrix{Float64}
+    column_types::Array{LRNCType, 1}
+    keys::Array{Int64, 1}
+    names::Array{String, 1}
+    key_name::String
+    comment::String
 
     function LRNData(data; column_types=[], keys=[], names=[], key_name="Key", comment="")
         (nrow, ncol) = size(data)
@@ -117,6 +119,11 @@ function writeLRN(lrn::LRNData, filename::String, directory=pwd())
 end
 
 
+"""
+    readLRN(filename::String, directory=pwd())
+
+Read the contents of a `*.lrn` and return a `LRNData` struct.
+"""
 function readLRN(filename::String, directory=pwd())
     data = []
     column_types = []
@@ -160,8 +167,7 @@ function readLRN(filename::String, directory=pwd())
         data = data[:,deleteat!(collect(1:ncol), key_index)] # remove key column
     end
 
-    LRNData(data; column_types = column_types, keys = keys,
-            names = names, key_name = key_name, comment = comment)
+    LRNData(data, column_types, keys, names, key_name, comment)
 end
 
 end # module
