@@ -1,5 +1,11 @@
-using DelimitedFiles
 include("utils.jl")
+
+module LRN
+
+import DelimitedFiles
+
+export LRNCType, LRNData, writeLRN, readLRN
+
 
 """
     LRNCType
@@ -149,7 +155,7 @@ function readLRN(filename::String, directory=pwd())
         key_name = names[key_index]
         deleteat!(names, key_index)
         # Data
-        data = readdlm(f, '\t', Float64, skipblanks = true)
+        data = DelimitedFiles.readdlm(f, '\t', Float64, skipblanks = true)
         keys = map(Int, data[:,key_index])
         data = data[:,deleteat!(collect(1:ncol), key_index)] # remove key column
     end
@@ -157,3 +163,5 @@ function readLRN(filename::String, directory=pwd())
     LRNData(data; column_types = column_types, keys = keys,
             names = names, key_name = key_name, comment = comment)
 end
+
+end # module
