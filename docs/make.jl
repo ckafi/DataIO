@@ -5,10 +5,17 @@ using DataIO
 
 makedocs(
     sitename = "DataIO",
+    authors = "Tobias Frilling",
     format = Documenter.HTML(),
-    modules = [DataIO]
+    modules = [DataIO],
+    pages = [
+        "Home" => "index.md",
+        "File Formats" => [
+            "Data (*.lrn)" => "lrn.md"
+        ]
+    ]
 )
 
 deploydocs(
-   repo = "github.com/ckafi/DataIO"
+    repo = "github.com/ckafi/DataIO"
 )

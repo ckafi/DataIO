@@ -2,8 +2,6 @@ language: julia
 
 os:
   - linux
-  - windows
-
 
 julia:
   - 1.1
