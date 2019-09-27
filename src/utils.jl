@@ -36,7 +36,7 @@ function addext(filename::String, extension::String)::String
 end
 
 
-function prepare_path(filename::String, extension::String, directory=pwd())::String
+function prepare_path(filename::String, extension::String, directory = pwd())::String
     # make sure the filename has the right extension
     filename = addext(filename, extension)
     # normalize path

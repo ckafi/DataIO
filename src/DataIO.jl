@@ -16,4 +16,6 @@ module DataIO
 
 include("LRN.jl")
 
+include("utils.jl")
+
 end # module

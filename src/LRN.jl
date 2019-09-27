@@ -1,18 +1,16 @@
 # Copyright 2019 Tobias Frilling
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-include("utils.jl")
 
 module LRN
 
@@ -30,9 +28,9 @@ ignore = 0, data = 1, class = 3
 """
 @enum LRNCType begin
     ignore = 0
-    data   = 1
-    class  = 3
-    key    = 9
+    data = 1
+    class = 3
+    key = 9
 end
 
 
@@ -66,9 +64,9 @@ end
 """
 struct LRNData
     data::Matrix{Float64}
-    column_types::Array{LRNCType, 1}
-    keys::Array{Int64, 1}
-    names::Array{String, 1}
+    column_types::Array{LRNCType,1}
+    keys::Array{Int64,1}
+    names::Array{String,1}
     key_name::String
     comment::String
 
@@ -106,7 +104,14 @@ end
 
 Convenience constructor for `LRNData`. Uses sensible defaults.
 """
-function LRNData(data::Matrix{Float64}; column_types = [], keys = [], names = [], key_name = "Key", comment = "")
+function LRNData(
+    data::Matrix{Float64};
+    column_types = [],
+    keys = [],
+    names = [],
+    key_name = "Key",
+    comment = "",
+)
     (nrow, ncol) = size(data)
     if isempty(column_types)
         column_types = map(LRNCType, fill(1, ncol))
@@ -115,7 +120,7 @@ function LRNData(data::Matrix{Float64}; column_types = [], keys = [], names = []
         keys = Array(1:nrow)
     end
     if isempty(names)
-        names = map(*, fill("C",ncol), map(string,1:ncol))
+        names = map(*, fill("C", ncol), map(string, 1:ncol))
     end
     LRNData(data, column_types, keys, names, key_name, comment)
 end
@@ -126,7 +131,7 @@ end
 
 Write the contents of a `LRNData` struct into a file.
 """
-function writeLRN(lrn::LRNData, filename::String, directory=pwd())
+function writeLRN(lrn::LRNData, filename::String, directory = pwd())
     (nrow, ncol) = size(lrn.data)
     filename = prepare_path(filename, "lrn", directory)
     open(filename, "w") do f
@@ -156,7 +161,7 @@ end
 
 Read the contents of a `*.lrn` and return a `LRNData` struct.
 """
-function readLRN(filename::String, directory=pwd())
+function readLRN(filename::String, directory = pwd())
     data = []
     column_types = []
     keys = []
@@ -185,8 +190,8 @@ function readLRN(filename::String, directory=pwd())
         # Column types
         column_types = split(strip_header(line), '\t')
         println(column_types)
-        column_types = map(x -> LRNCType(parse(Int,x)), column_types)
-        key_index = findfirst(x -> x==key, column_types)
+        column_types = map(x -> LRNCType(parse(Int, x)), column_types)
+        key_index = findfirst(x -> x == key, column_types)
         deleteat!(column_types, key_index)
         line = readline(f)
         # Names
@@ -195,8 +200,8 @@ function readLRN(filename::String, directory=pwd())
         deleteat!(names, key_index)
         # Data
         data = DelimitedFiles.readdlm(f, '\t', Float64, skipblanks = true)
-        keys = map(Int, data[:,key_index])
-        data = data[:,deleteat!(collect(1:ncol), key_index)] # remove key column
+        keys = map(Int, data[:, key_index])
+        data = data[:, deleteat!(collect(1:ncol), key_index)] # remove key column
     end
 
     LRNData(data, column_types, keys, names, key_name, comment)
