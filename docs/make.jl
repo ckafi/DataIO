@@ -4,7 +4,7 @@ using Documenter
 using DataIO
 
 makedocs(
-    sitename = "DataIO",
+    sitename = "DataIO.jl",
     authors = "Tobias Frilling",
     format = Documenter.HTML(),
     modules = [DataIO],
@@ -17,5 +17,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/ckafi/DataIO"
+    repo = "github.com/ckafi/DataIO.jl"
 )
