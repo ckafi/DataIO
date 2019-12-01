@@ -12,19 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module LRN
-
-import DelimitedFiles
-
-export LRNCType, LRNData, writeLRN, readLRN
-
-
 """
     LRNCType
 
 Enum representing the column types for LRNData:
 
-ignore = 0, data = 1, class = 3
+`ignore = 0, data = 1, class = 3, key = 9`
 """
 @enum LRNCType begin
     ignore = 0
@@ -40,27 +33,27 @@ end
 `LRNData` represents the contents of a `*.lrn` file with the following fields:
 - `data::Matrix{Float64}`
 
-  Matrix of data, cases in rows, variables in columns
+    Matrix of data, cases in rows, variables in columns
 
 - `column_types::Array{LRNCType, 1}`
 
-  Column types, see `LRNCType`
+    Column types, see `LRNCType`
 
 - `keys::Array{Integer, 1}`
 
-  Unique key for each line
+    Unique key for each line
 
 - `names::Array{String, 1}`
 
-  Column names
+    Column names
 
 - `key_name::String`
 
-  Name for key column
+    Name for key column
 
 - `comment::String`
 
-  Comments about the data
+    Comments about the data
 """
 struct LRNData
     data::Matrix{Float64}
@@ -73,55 +66,35 @@ struct LRNData
     function LRNData(data::Matrix{Float64}, column_types, keys, names, key_name, comment)
         (nrow, ncol) = size(data)
         # Enforcing invariants
-        if length(names) != ncol
-            throw(ArgumentError("Name count doesn't match number of columns"))
-        end
-        if length(keys) != nrow
-            throw(ArgumentError("Number of keys doesn't match number of rows"))
-        end
-        if !allunique(keys)
-            throw(ArgumentError("Keys must be unique"))
-        end
-        if length(column_types) != ncol
-            throw(ArgumentError("Number of type specifiers doesn't match number of columns"))
-        end
-        if key in column_types
-            throw(ArgumentError("Key vector must be provided seperatly."))
-        end
+        @assert length(names) == ncol
+        @assert length(keys) == nrow
+        @assert length(column_types) == ncol
+        @assert allunique(keys)
         new(data, column_types, keys, names, key_name, comment)
     end
 end
 
 
 """
-    LRNData(data;
-            column_types=[9,1,1...],
-            keys=[1,2,3...],
-            names=["C1","C2","C3"...],
-            key_name="Key",
-            comment=""
-    )
+    LRNData(data::AbstractMatrix{Float64})
 
-Convenience constructor for `LRNData`. Uses sensible defaults.
+Convenience constructor for `LRNData`. Uses sensible defaults:
+```
+column_types=[9,1,1...]
+keys=[1,2,3...]
+names=["C1","C2","C3"...]
+key_name="Key"
+comment=""
+```
 """
 function LRNData(
-    data::Matrix{Float64};
-    column_types = [],
-    keys = [],
-    names = [],
-    key_name = "Key",
-    comment = "",
+    data::AbstractMatrix{Float64};
+    column_types = LRNCType.(fill(1, size(data, 2))),
+    keys         = collect(1:size(data, 1)),
+    names        = fill("C", size(data, 2)) .* string.(1:size(data, 2)),
+    key_name     = "Key",
+    comment      = "",
 )
-    (nrow, ncol) = size(data)
-    if isempty(column_types)
-        column_types = map(LRNCType, fill(1, ncol))
-    end
-    if isempty(keys)
-        keys = Array(1:nrow)
-    end
-    if isempty(names)
-        names = map(*, fill("C", ncol), map(string, 1:ncol))
-    end
     LRNData(data, column_types, keys, names, key_name, comment)
 end
 
@@ -189,7 +162,6 @@ function readLRN(filename::String, directory = pwd())
         line = readline(f)
         # Column types
         column_types = split(strip_header(line), '\t')
-        println(column_types)
         column_types = map(x -> LRNCType(parse(Int, x)), column_types)
         key_index = findfirst(x -> x == key, column_types)
         deleteat!(column_types, key_index)
@@ -206,5 +178,3 @@ function readLRN(filename::String, directory = pwd())
 
     LRNData(data, column_types, keys, names, key_name, comment)
 end
-
-end # module

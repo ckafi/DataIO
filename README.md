@@ -1,17 +1,7 @@
-# DataIO.jl
+# DataIo.jl
 
-[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ckafi.github.io/DataIO.jl/latest/)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https:/ckafi.github.io/DataIo.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https:/ckafi.github.io/DataIo.jl/dev)
+[![Build Status](https://travis-ci.com/ckafi/DataIo.jl.svg?branch=master)](https://travis-ci.com/ckafi/DataIo.jl)
 
 A Julia port of the [DataIO R package](https://github.com/aultsch/DataIO).
-
-## Introduction
-
-This package provides functions for reading and writing of data files consisting
-of [n,k] matrices.
-
-## Installation
-`DataIO` is not yet registered. To install the development version from a Julia
-REPL type `]` to enter Pkg REPL mode and run
-```
-pkg> add https://github.com/ckafi/DataIO.jl
-```

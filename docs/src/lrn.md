@@ -1,8 +1,7 @@
 # LRN
-
 ## File structure
 
-The *.lrn file contains the input data as tab separated values. Features in
+The `*.lrn` file contains the input data as tab separated values. Features in
 columns, datasets in rows. The first column should be a unique integer key. The
 optional header contains descriptions of the columns.
 
@@ -28,8 +27,15 @@ xn1           xn2         ..      xnm
 |``var\_name_i`` | Name for the i-th feature                                              |
 |``x_{ij}``      | Elements of the data matrix. Decimal numbers denoted by '.', not by ','|
 
-## Code Documentation
+## Writing and Reading
+```@docs
+writeLRN
+readLRN
+```
 
-```@autodocs
-Modules = [DataIO.LRN]
+## Types and Constructors
+```@docs
+LRNData
+LRNData(::AbstractMatrix{Float64})
+LRNCType
 ```

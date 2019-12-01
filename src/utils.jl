@@ -12,23 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-    addext(filename::String, extension::String)
-
-Add extension to filename if necessary.
-
-# Examples
-```jldoctest
-julia> addext("hello", "data")
-"hello.data"
-
-julia> addext("hello.data", "data")
-"hello.data"
-
-julia> addext("hello.", ".data")
-"hello.data"
-```
-"""
 function addext(filename::String, extension::String)::String
     filename = rstrip(filename, '.')
     extension = extension[1] == '.' ? extension : '.' * extension

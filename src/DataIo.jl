@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module DataIO
+module DataIo
 
-include("LRN.jl")
+import DelimitedFiles
+
+export LRNCType, LRNData, writeLRN, readLRN
 
 include("utils.jl")
+include("LRN.jl")
+
 
 end # module
