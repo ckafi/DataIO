@@ -19,8 +19,8 @@ x21           x22         ..      x2m
 xn1           xn2         ..      xnm
 ```
 
-|Element         | Description                                                            |
-|:------         |:-----------                                                            |
+|Element         |Description                                                             |
+|:------         |:----------                                                             |
 |``n``           | Number of datasets                                                     |
 |``m``           | Number of columns (including index)                                    |
 |``s_i``         | Type of column: 9 for unique key, 1 for data, 0 to ignore column       |

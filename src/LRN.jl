@@ -147,7 +147,7 @@ function readLRN(filename::String, directory = pwd())
     # There is currently no way to have a native file chooser dialogue
     # without building a whole Gtk/Tk GUI
 
-    filename = prepare_path(filename, "lrn")
+    filename = prepare_path(filename, "lrn", directory)
     open(filename, "r") do f
         line = readline(f)
         # Comments
@@ -173,7 +173,7 @@ function readLRN(filename::String, directory = pwd())
         key_name = names[key_index]
         deleteat!(names, key_index)
         # Data
-        data = DelimitedFiles.readdlm(f, '\t', Float64, skipblanks = true)
+        data = readdlm(f, '\t', Float64, skipblanks = true)
         key = map(Int, data[:, key_index])
         data = data[:, deleteat!(collect(1:ncol), key_index)] # remove key column
     end

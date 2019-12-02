@@ -12,16 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module DataIo
+"""
+    readUMX(filename::String, directory=pwd())
 
-using DelimitedFiles
-
-export LRNData, writeLRN, readLRN
-export readUMX
-
-include("utils.jl")
-include("LRN.jl")
-include("UMX.jl")
-
-
-end # module
+Read the contents of a `*.umx` and return a `Matrix{Float64}`
+"""
+function readUMX(filename::String, directory = pwd())
+    filename = prepare_path(filename, "umx", directory)
+    readdlm(filename, Float64, skipblanks = true, skipstart = 1)
+end

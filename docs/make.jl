@@ -11,7 +11,8 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "File Formats" => [
-            "Data `(*.lrn)`" => "lrn.md"
+            "Data `(*.lrn)`" => "lrn.md",
+            "Matrix `(*.umx)`" => "umx.md"
         ]
     ]
 )
