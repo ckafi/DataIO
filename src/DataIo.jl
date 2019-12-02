@@ -16,7 +16,7 @@ module DataIo
 
 import DelimitedFiles
 
-export LRNCType, LRNData, writeLRN, readLRN
+export LRNData, writeLRN, readLRN
 
 include("utils.jl")
 include("LRN.jl")

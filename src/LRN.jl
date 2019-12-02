@@ -39,7 +39,7 @@ end
 
     Column types, see `LRNCType`
 
-- `keys::Array{Integer, 1}`
+- `key::Array{Integer, 1}`
 
     Unique key for each line
 
@@ -58,19 +58,20 @@ end
 struct LRNData
     data::Matrix{Float64}
     column_types::Array{LRNCType,1}
-    keys::Array{Int64,1}
+    key::Array{Int64,1}
     names::Array{String,1}
     key_name::String
     comment::String
 
-    function LRNData(data::Matrix{Float64}, column_types, keys, names, key_name, comment)
+    function LRNData(data::Matrix{Float64}, column_types, key, names, key_name, comment)
         (nrow, ncol) = size(data)
         # Enforcing invariants
         @assert length(names) == ncol
-        @assert length(keys) == nrow
+        @assert length(key) == nrow
         @assert length(column_types) == ncol
-        @assert allunique(keys)
-        new(data, column_types, keys, names, key_name, comment)
+        @assert allunique(key)
+        @assert all(i -> 1 <= i <= nrow, key)
+        new(data, column_types, key, names, key_name, comment)
     end
 end
 
@@ -81,7 +82,7 @@ end
 Convenience constructor for `LRNData`. Uses sensible defaults:
 ```
 column_types=[9,1,1...]
-keys=[1,2,3...]
+key=[1,2,3...]
 names=["C1","C2","C3"...]
 key_name="Key"
 comment=""
@@ -90,12 +91,12 @@ comment=""
 function LRNData(
     data::AbstractMatrix{Float64};
     column_types = LRNCType.(fill(1, size(data, 2))),
-    keys         = collect(1:size(data, 1)),
+    key          = collect(1:size(data, 1)),
     names        = fill("C", size(data, 2)) .* string.(1:size(data, 2)),
     key_name     = "Key",
     comment      = "",
 )
-    LRNData(data, column_types, keys, names, key_name, comment)
+    LRNData(data, column_types, key, names, key_name, comment)
 end
 
 
@@ -123,7 +124,7 @@ function writeLRN(lrn::LRNData, filename::String, directory = pwd())
         # write data
         for (index, row) in enumerate(eachrow(lrn.data))
             new_row = replace(row, Inf => NaN)
-            write(f, "$(lrn.keys[index])\t$(join(new_row,'\t'))\n")
+            write(f, "$(lrn.key[index])\t$(join(new_row,'\t'))\n")
         end
     end
 end
@@ -137,7 +138,7 @@ Read the contents of a `*.lrn` and return a `LRNData` struct.
 function readLRN(filename::String, directory = pwd())
     data = []
     column_types = []
-    keys = []
+    key = []
     names = []
     key_name = ""
     comment = ""
@@ -172,9 +173,9 @@ function readLRN(filename::String, directory = pwd())
         deleteat!(names, key_index)
         # Data
         data = DelimitedFiles.readdlm(f, '\t', Float64, skipblanks = true)
-        keys = map(Int, data[:, key_index])
+        key = map(Int, data[:, key_index])
         data = data[:, deleteat!(collect(1:ncol), key_index)] # remove key column
     end
 
-    LRNData(data, column_types, keys, names, key_name, comment)
+    LRNData(data, column_types, key, names, key_name, comment)
 end
