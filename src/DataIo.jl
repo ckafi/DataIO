@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module DataIo
+module DataIO
 
 using DelimitedFiles
 
@@ -22,6 +22,5 @@ export readUMX
 include("utils.jl")
 include("LRN.jl")
 include("UMX.jl")
-
 
 end # module

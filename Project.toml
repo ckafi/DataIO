@@ -1,4 +1,4 @@
-name = "DataIo"
+name = "DataIO"
 uuid = "ef35fa6a-3910-11e9-1848-752a35b00f56"
 authors = ["Tobias Frilling <tobias@frilling-online.de>"]
 version = "0.1.0"

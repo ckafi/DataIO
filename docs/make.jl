@@ -1,13 +1,13 @@
 push!(LOAD_PATH,"../src/")
 
 using Documenter
-using DataIo
+using DataIO
 
 makedocs(
-    sitename = "DataIo.jl",
+    sitename = "DataIO.jl",
     authors = "Tobias Frilling",
     format = Documenter.HTML(),
-    modules = [DataIo],
+    modules = [DataIO],
     pages = [
         "Home" => "index.md",
         "File Formats" => [
@@ -18,5 +18,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/ckafi/DataIo.jl"
+    repo = "github.com/ckafi/DataIO.jl"
 )

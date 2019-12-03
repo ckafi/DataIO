@@ -19,5 +19,12 @@ Read the contents of a `*.umx` and return a `Matrix{Float64}`
 """
 function readUMX(filename::String, directory = pwd())
     filename = prepare_path(filename, "umx", directory)
-    readdlm(filename, Float64, skipblanks = true, skipstart = 1)
+    result = Matrix{Float64}(undef, (0,0))
+
+    open(filename, "r") do f
+        skipStarting(f, ['#', '%'])
+        result = readdlm(f, '\t', Float64, skipblanks = true)
+    end
+
+    return result
 end

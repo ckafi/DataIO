@@ -165,7 +165,7 @@ function readLRN(filename::String, directory = pwd())
         # Column types
         column_types = split(strip_header(line), '\t')
         column_types = map(x -> LRNCType(parse(Int, x)), column_types)
-        key_index = findfirst(x -> x == DataIo.key, column_types)
+        key_index = findfirst(x -> x == DataIO.key, column_types)
         deleteat!(column_types, key_index)
         line = readline(f)
         # Names
