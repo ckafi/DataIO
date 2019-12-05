@@ -1,7 +1,7 @@
 name = "DataIO"
 uuid = "ef35fa6a-3910-11e9-1848-752a35b00f56"
 authors = ["Tobias Frilling <tobias@frilling-online.de>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
