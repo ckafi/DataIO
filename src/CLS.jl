@@ -15,16 +15,16 @@
 """
     readCLS(filename::String, directory=pwd())
 
-Read the contents of a `*.cls` and return a `Dict{Int, Int}`
+Read the contents of a `*.cls` and return a `Dict` from classid to index.
 """
 function readCLS(filename::String, directory = pwd())
     filename = prepare_path(filename, "cls", directory)
-    result = Dict{Int, Int}()
+    result = Dict{Int, Vector{Int}}()
 
     open(filename, "r") do f
         skipStarting(f, ['#', '%'])
         for row in eachrow(readdlm(f, '\t', Float64, skipblanks = true))
-            result[row[1]] = row[2]
+            push!(get!(result, row[2], []), row[1])
         end
     end
 
