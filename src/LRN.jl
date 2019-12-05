@@ -99,6 +99,11 @@ function LRNData(
     LRNData(data, column_types, key, names, key_name, comment)
 end
 
+Base.firstindex(D::LRNData) = 1
+Base.lastindex(D::LRNData) = size(D, 2)
+Base.getindex(D::LRNData, i::Int) = D.data[D.key[i], :]
+Base.getindex(D::LRNData, I) = [D[i] for i in I]
+
 
 """
     writeLRN(filename::String, lrn::LRNData, directory=pwd())

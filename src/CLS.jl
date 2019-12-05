@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module DataIO
+"""
+    readCLS(filename::String, directory=pwd())
 
-using DelimitedFiles
+Read the contents of a `*.cls` and return a `Dict{Int, Int}`
+"""
+function readCLS(filename::String, directory = pwd())
+    filename = prepare_path(filename, "cls", directory)
+    result = Dict{Int, Int}()
 
+    open(filename, "r") do f
+        skipStarting(f, ['#', '%'])
+        for row in eachrow(readdlm(f, '\t', Float64, skipblanks = true))
+            result[row[1]] = row[2]
+        end
+    end
 
-include("utils.jl")
-
-include("CLS.jl")
-export readCLS
-
-include("LRN.jl")
-export LRNData, writeLRN, readLRN
-
-include("UMX.jl")
-export readUMX
-
-end # module
+    return result
+end
