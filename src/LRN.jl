@@ -30,30 +30,15 @@ end
 """
     LRNData
 
-`LRNData` represents the contents of a `*.lrn` file with the following fields:
-- `data::Matrix{Float64}`
+`LRNData` represents the contents of a `*.lrn` file.
 
-    Matrix of data, cases in rows, variables in columns
-
-- `column_types::Array{LRNCType, 1}`
-
-    Column types, see `LRNCType`
-
-- `key::Array{Integer, 1}`
-
-    Unique key for each line
-
-- `names::Array{String, 1}`
-
-    Column names
-
-- `key_name::String`
-
-    Name for key column
-
-- `comment::String`
-
-    Comments about the data
+# Fields
+- `data::Matrix{Float64}`: Matrix of data, cases in rows, variables in columns.
+- `column_types::Array{LRNCType, 1}`: Column types, see `LRNCType`.
+- `key::Array{Integer, 1}`: Unique key for each line.
+- `names::Array{String, 1}`: Column names.
+- `key_name::String`: Name for key column.
+- `comment::String`: Comments about the data.
 """
 struct LRNData
     data::Matrix{Float64}
@@ -80,12 +65,12 @@ end
     LRNData(data::AbstractMatrix{Float64})
 
 Convenience constructor for `LRNData`. Uses sensible defaults:
-```
-column_types=[9,1,1...]
-key=[1,2,3...]
-names=["C1","C2","C3"...]
-key_name="Key"
-comment=""
+```julia
+column_types = [9,1,1...]
+key          = [1,2,3...]
+names        = ["C1","C2","C3"...]
+key_name     = "Key"
+comment      = ""
 ```
 """
 function LRNData(
