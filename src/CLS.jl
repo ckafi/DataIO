@@ -23,7 +23,7 @@ function readCLS(filename::String, directory = pwd())
 
     open(filename, "r") do f
         skipStarting(f, ['#', '%'])
-        for row in eachrow(readdlm(f, '\t', Float64, skipblanks = true))
+        for row in eachrow(readdlm(f, Float64, skipblanks = true))
             push!(get!(result, row[2], []), row[1])
         end
     end

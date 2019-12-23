@@ -163,7 +163,7 @@ function readLRN(filename::String, directory = pwd())
         key_name = names[key_index]
         deleteat!(names, key_index)
         # Data
-        data = readdlm(f, '\t', Float64, skipblanks = true)
+        data = readdlm(f, Float64, skipblanks = true)
         key = map(Int, data[:, key_index])
         data = data[:, deleteat!(collect(1:ncol), key_index)] # remove key column
     end

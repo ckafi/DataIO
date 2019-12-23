@@ -23,7 +23,7 @@ function readUMX(filename::String, directory = pwd())
 
     open(filename, "r") do f
         skipStarting(f, ['#', '%'])
-        result = readdlm(f, '\t', Float64, skipblanks = true)
+        result = readdlm(f, Float64, skipblanks = true)
     end
 
     return result
